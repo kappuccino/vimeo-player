@@ -1,8 +1,8 @@
 {
-	"name": "vimeo-player-gh-pages",
-	"main": "index.html",
-	"dependencies": {
-		"vimeo-player": "~0.0.1",
-		"polymer": "Polymer/polymer#^0.4.1"
-	}
+"name": "vimeo-player-gh-pages",
+"main": "index.html",
+"dependencies": {
+"vimeo-player": "~0.0.1",
+"polymer": "Polymer/polymer#^0.4.1"
+}
 }

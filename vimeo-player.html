@@ -1,19 +1,28 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../core-ajax/core-ajax.html">
 
+<!--
+`vimeo-player` allow you to embed videos from vimeo.com
+
+    <vimeo-player videoid="123456789"></vimeo-player>
+
+You can specify `height` or `width` or be mobile friendly and use `responsive` instead
+
+@element vimeo-player
+@status beta
+@homepage http://kappuccino.github.io/vimeo-player
+-->
+
 <polymer-element
 
     name="vimeo-player"
-    attributes="videoid title byline portrait color autoplay loop api player_id width height frameborder showCaption responsive">
+    attributes="videoid title byline portrait color autoplay loop api player_id width height frameborder responsive">
 
     <template>
 
         <style>
-            #wrapper{
-                display: inline-block;
-            }
-
             .embed-container{
+                display: block;
                 position: relative;
                 padding-bottom: 56.25%;
                 overflow: hidden;
@@ -57,90 +66,155 @@
 
     <script>
         Polymer('vimeo-player', {
+
             /**
-             * All those values are passed through the iframe url, check vimeo documentation for further details
+             * Fired when the player get the response from Vimeo API
+             *
+             * You received the raw event triggered from the Polymer element (check the demo,
+             * to deal with the Vimeo response object.
+             *
+             * @event vimeo-player-response
+             */
+
+
+
+            /**
+             * The ID of the video. For exemple.
+             *
+             * This is actually the only thing you have to define yourself
+             *
+             * @attribute videoid
+             * @type string
+             */
+            videoid: '',
+
+            /**
+             * An optional unique id for the player that will be passed back with all Javascript API responses.
+             *
+             * @attribute player_id
+             * @type string
              */
             player_id: '',
+
+            /**
+             * Show the user’s portrait on the video.
+             *
+             * @attribute portrait
+             * @type number
+             * @default 1
+             */
             portrait: 0,
-            color: '',
+
+            /**
+             * Specify the color of the video controls. Defaults to 00adef. Make sure that you don’t include the #.
+             *
+             * @attribute color
+             * @type number
+             * @default 0
+             */
+            color: '00adef',
+
+            /**
+             * Play the video automatically on load. Defaults to 0. Note that this won’t work on some devices.
+             *
+             * @attribute autoplay
+             * @type number
+             * @default 0
+             */
             autoplay: 0,
+
+            /**
+             * Define if the player make a loop or not
+             *
+             * @attribute loop
+             * @type number
+             * @default 0
+             */
             loop: 0,
-            videoid: '',
+
+            /**
+             * Display or not the title of the video. Vimeo PLUS users have power to force this value
+             *
+             * @attribute title
+             * @type number
+             */
             title: '',
+
+            /**
+             * Show the user’s byline on the video.
+             *
+             * @attribute width
+             * @type number
+             */
             byline: '',
+
+            /**
+             * Show the user’s byline on the video.
+             *
+             * @attribute width
+             * @type number
+             */
             api: '',
 
             /**
              * The Width value of the iframe, if `responsive` is on the value will not be used
              *
-             * @property    width
-             * @type        number
-             * @default     550
+             * @attribute width
+             * @type number
+             * @default 550
              */
-            width: 550,
+            width: '',
 
             /**
              * The Height value of the iframe, if `responsive` is on the value will not be used
              *
-             * @property    height
-             * @type        number
-             * @default     300
+             * @attribute height
+             * @type number
+             * @default 300
              */
-            height: 300,
+            height: '',
 
             /**
              * Control the border width of the frame
              *
-             * @property    frameborder
-             * @type        number
-             * @default     0
+             * @attribute frameborder
+             * @type number
+             * @default 0
              */
             frameborder: 0,
 
             /**
-             * View or hide the caption below the player
-             *
-             * @property    showCaption
-             * @type        number
-             * @default     1
-             */
-            showCaption: 1,
-
-            /**
              * Toggle the responsiveness of the player
              *
-             * @property    responsive
-             * @type        number
-             * @default     0
+             * @attribute responsive
+             * @type number
+             * @default 0
              */
             responsive: 0,
 
-            // Internal purpose only
+            /**
+             * The caption displayed below the video
+             *
+             * @attribute caption
+             * @type string
+             */
             caption: '',
 
             ready: function (){
+
+                // If both height and width ares missing, be responsive
+                if(!this.height && !this.width) this.responsive = 1;
+
+
                 // If the player is responsive, add the .embed-container class
                 if(this.responsive) this.$.wrapper.className = 'embed-container'
             },
 
             handleResponse: function(event, data, raw){
                 data = data.response;
-
-                if(!data.length) return;
-                if(!data[0]) return;
-
-                if(this.showCaption) {
-                    var duration
-
-                    data = data[0];
-                    duration = data.duration;
-
-                    duration =  (duration > 60)
-                        ? Math.floor(duration / 60) + 'm' + (duration % 60) + 's'
-                        : duration + 's';
-
-                    this.caption = data.title + ' - ' + duration
-                }
+                if (!data.length) return;
+                if (!data[0]) return;
+                this.fire('vimeo-player-response', {data: data[0]});
             }
         });
     </script>

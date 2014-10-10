@@ -4,7 +4,7 @@
   "authors": [
     "Benjamin Mosnier<bm@kappuccino.org>"
   ],
-  "description": "A simple way ton include responsive videos from vimeo.com",
+  "description": "A simple way ton include responsive videos from vimeo.com using Polymer",
   "keywords": [
     "web-component",
     "web-components",

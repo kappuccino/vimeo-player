@@ -1,0 +1,148 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../core-ajax/core-ajax.html">
+
+<polymer-element
+
+    name="vimeo-player"
+    attributes="videoid title byline portrait color autoplay loop api player_id width height frameborder showCaption responsive">
+
+    <template>
+
+        <style>
+            #wrapper{
+                display: inline-block;
+            }
+
+            .embed-container{
+                position: relative;
+                padding-bottom: 56.25%;
+                overflow: hidden;
+                max-width: 100%;
+                height: auto;
+            }
+
+            .embed-container iframe,
+            .embed-container object,
+            .embed-container embed{
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+            }
+
+            p{
+                text-align: center;
+            }
+        </style>
+
+
+        <div id="wrapper">
+            <iframe src="//player.vimeo.com/video/{{videoid}}?portrait={{portrait}}&color={{color}}&title={{title}}&byline={{byline}}&autoplay={{autoplay}}&loop={{loop}}&api={{api}}&player_id={{player_id}}"
+                    width="{{width}}"
+                    height="{{height}}"
+                    frameborder="{{frameborder}}" webkitAllowFullScreen mozallowfullscreen allowFullScreen>
+            </iframe>
+            <p>{{caption}}</p>
+        </div>
+
+
+        <core-ajax id="vimeoAPI" auto
+                   url="http://vimeo.com/api/v2/video/{{videoid}}.json"
+                   handleAs="json"
+                   on-core-response="{{handleResponse}}">
+        </core-ajax>
+
+    </template>
+
+    <script>
+        Polymer('vimeo-player', {
+            /**
+             * All those values are passed through the iframe url, check vimeo documentation for further details
+             */
+            player_id: '',
+            portrait: 0,
+            color: '',
+            autoplay: 0,
+            loop: 0,
+            videoid: '',
+            title: '',
+            byline: '',
+            api: '',
+
+            /**
+             * The Width value of the iframe, if `responsive` is on the value will not be used
+             *
+             * @property    width
+             * @type        number
+             * @default     550
+             */
+            width: 550,
+
+            /**
+             * The Height value of the iframe, if `responsive` is on the value will not be used
+             *
+             * @property    height
+             * @type        number
+             * @default     300
+             */
+            height: 300,
+
+            /**
+             * Control the border width of the frame
+             *
+             * @property    frameborder
+             * @type        number
+             * @default     0
+             */
+            frameborder: 0,
+
+            /**
+             * View or hide the caption below the player
+             *
+             * @property    showCaption
+             * @type        number
+             * @default     1
+             */
+            showCaption: 1,
+
+            /**
+             * Toggle the responsiveness of the player
+             *
+             * @property    responsive
+             * @type        number
+             * @default     0
+             */
+            responsive: 0,
+
+            // Internal purpose only
+            caption: '',
+
+            ready: function (){
+                // If the player is responsive, add the .embed-container class
+                if(this.responsive) this.$.wrapper.className = 'embed-container'
+            },
+
+            handleResponse: function(event, data, raw){
+                data = data.response;
+
+                if(!data.length) return;
+                if(!data[0]) return;
+
+                if(this.showCaption) {
+                    var duration
+
+                    data = data[0];
+                    duration = data.duration;
+
+                    duration =  (duration > 60)
+                        ? Math.floor(duration / 60) + 'm' + (duration % 60) + 's'
+                        : duration + 's';
+
+                    this.caption = data.title + ' - ' + duration
+                }
+            }
+        });
+    </script>
+
+</polymer-element>

@@ -1,29 +1,8 @@
 {
-  "name": "vimeo-player",
-  "version": "0.0.1",
-  "authors": [
-    "Benjamin Mosnier<bm@kappuccino.org>"
-  ],
-  "description": "A simple way ton include responsive videos from vimeo.com",
-  "keywords": [
-    "web-component",
-    "web-components",
-    "polymer",
-    "vimeo",
-    "responsive"
-  ],
-  "main": "vimeo-player.html",
-  "license": "MIT",
-  "homepage": "https://github.com/kappuccino/vimeo-player/",
-  "ignore": [
-    "/.*",
-    "/tests/"
-  ],
-  "dependencies": {
-    "polymer": "Polymer/polymer#^0.4.1",
-    "core-elements": "Polymer/core-elements#~0.4.2"
-  },
-  "devDependencies": {
-    "web-component-tester": "Polymer/web-component-tester#^0.7.3"
-  }
+	"name": "vimeo-player-gh-pages",
+	"main": "index.html",
+	"dependencies": {
+		"vimeo-player": "~0.0.1",
+		"polymer": "Polymer/polymer#^0.4.1"
+	}
 }

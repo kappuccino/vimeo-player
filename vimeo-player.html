@@ -1,5 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../core-ajax/core-ajax.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
 
 <!--
 `vimeo-player` allow you to embed videos from vimeo.com
@@ -13,210 +13,231 @@ You can specify `height` or `width` or be mobile friendly and use `responsive` i
 @homepage http://kappuccino.github.io/vimeo-player
 -->
 
-<polymer-element
+<dom-module id="vimeo-player">
+  <link rel="stylesheet" href="vimeo-player.css" type="text/css">
 
-    name="vimeo-player"
-    attributes="videoid title byline portrait color autoplay loop api player_id width height frameborder responsive">
+  <template>
+    <div id="wrapper">
+      <iframe
+        src="//player.vimeo.com/video{{videoid}}?portrait={{portrait}}&color={{color}}&title={{title}}&byline={{byline}}&autoplay={{autoplay}}&loop={{loop}}&api={{api}}&player_id={{player_id}}"
+        width="{{width}}"
+        height="{{height}}"
+        frameborder="{{frameborder}}" webkitAllowFullScreen mozallowfullscreen allowfullscreen>
+      </iframe>
+      <p>{{caption}}</p>
+    </div>
 
-    <template>
+    <iron-ajax id="vimeoAPI" auto
+      url="http://vimeo.com/api/v2/video/{{videoid}}.json"
+      handle-as="json"
+      on-response="{{handleResponse}}">
+    </iron-ajax>
+  </template>
 
-        <style>
-            .embed-container{
-                display: block;
-                position: relative;
-                padding-bottom: 56.25%;
-                overflow: hidden;
-                max-width: 100%;
-                height: auto;
-            }
-
-            .embed-container iframe,
-            .embed-container object,
-            .embed-container embed{
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-            }
-
-            p{
-                text-align: center;
-            }
-        </style>
-
-
-        <div id="wrapper">
-            <iframe src="//player.vimeo.com/video/{{videoid}}?portrait={{portrait}}&color={{color}}&title={{title}}&byline={{byline}}&autoplay={{autoplay}}&loop={{loop}}&api={{api}}&player_id={{player_id}}"
-                    width="{{width}}"
-                    height="{{height}}"
-                    frameborder="{{frameborder}}" webkitAllowFullScreen mozallowfullscreen allowFullScreen>
-            </iframe>
-            <p>{{caption}}</p>
-        </div>
-
-
-        <core-ajax id="vimeoAPI" auto
-                   url="http://vimeo.com/api/v2/video/{{videoid}}.json"
-                   handleAs="json"
-                   on-core-response="{{handleResponse}}">
-        </core-ajax>
-
-    </template>
-
-    <script>
-        Polymer('vimeo-player', {
-
-            /**
-             * Fired when the player get the response from Vimeo API
-             *
-             * You received the raw event triggered from the Polymer element (check the demo,
-             * to deal with the Vimeo response object.
-             *
-             * @event vimeo-player-response
-             */
+  <script>
+    Polymer({
+      is: "vimeo-player",
+      /**
+       * Fired when the player get the response from Vimeo API
+       *
+       * You received the raw event triggered from the Polymer element (check the demo,
+       * to deal with the Vimeo response object.
+       *
+       * @event vimeo-player-response
+       */
 
 
 
-            /**
-             * The ID of the video. For exemple.
-             *
-             * This is actually the only thing you have to define yourself
-             *
-             * @attribute videoid
-             * @type string
-             */
-            videoid: '',
+      properties: {
+        /**
+         * The ID of the video. For exemple.
+         *
+         * This is actually the only thing you have to define yourself
+         *
+         * @attribute videoid
+         * @type string
+         */
+        videoid: {
+          type: String,
+          value: ''
+        },
 
-            /**
-             * An optional unique id for the player that will be passed back with all Javascript API responses.
-             *
-             * @attribute player_id
-             * @type string
-             */
-            player_id: '',
+        /**
+         * An optional unique id for the player that will be passed back with all Javascript API responses.
+         *
+         * @attribute player_id
+         * @type string
+         */
+        player_id: {
+          type: String,
+          value: ''
+        },
 
-            /**
-             * Show the user’s portrait on the video.
-             *
-             * @attribute portrait
-             * @type number
-             * @default 1
-             */
-            portrait: 0,
+        /**
+         * Show the user’s portrait on the video.
+         *
+         * @attribute portrait
+         * @type number
+         * @default 1
+         */
+        portrait: {
+          type: Number,
+          value: 0
+        },
 
-            /**
-             * Specify the color of the video controls. Defaults to 00adef. Make sure that you don’t include the #.
-             *
-             * @attribute color
-             * @type number
-             * @default 0
-             */
-            color: '00adef',
+        /**
+         * Specify the color of the video controls. Defaults to 00adef. Make sure that you don’t include the #.
+         *
+         * @attribute color
+         * @type number
+         * @default 0
+         */
+        color: {
+          type: String,
+          value: '00adef'
+        },
 
-            /**
-             * Play the video automatically on load. Defaults to 0. Note that this won’t work on some devices.
-             *
-             * @attribute autoplay
-             * @type number
-             * @default 0
-             */
-            autoplay: 0,
+        /**
+         * Play the video automatically on load. Defaults to 0. Note that this won’t work on some devices.
+         *
+         * @attribute autoplay
+         * @type number
+         * @default 0
+         */
+        autoplay: {
+          type: Number,
+          value: 0
+        },
 
-            /**
-             * Define if the player make a loop or not
-             *
-             * @attribute loop
-             * @type number
-             * @default 0
-             */
-            loop: 0,
+        /**
+         * Define if the player make a loop or not
+         *
+         * @attribute loop
+         * @type number
+         * @default 0
+         */
+        loop: {
+          type: Number,
+          value: 0
+        },
 
-            /**
-             * Display or not the title of the video. Vimeo PLUS users have power to force this value
-             *
-             * @attribute title
-             * @type number
-             */
-            title: '',
+        /**
+         * Display or not the title of the video. Vimeo PLUS users have power to force this value
+         *
+         * @attribute title
+         * @type number
+         */
+        title: {
+          type: String,
+          value: ''
+        },
 
-            /**
-             * Show the user’s byline on the video.
-             *
-             * @attribute width
-             * @type number
-             */
-            byline: '',
+        /**
+         * Show the user’s byline on the video.
+         *
+         * @attribute width
+         * @type number
+         */
+        byline: {
+          type: String,
+          value: ''
+        },
 
-            /**
-             * Show the user’s byline on the video.
-             *
-             * @attribute width
-             * @type number
-             */
-            api: '',
+        /**
+         * Show the user’s byline on the video.
+         *
+         * @attribute width
+         * @type number
+         */
+        api: {
+          type: String,
+          value: ''
+        },
 
-            /**
-             * The Width value of the iframe, if `responsive` is on the value will not be used
-             *
-             * @attribute width
-             * @type number
-             * @default 550
-             */
-            width: '',
+        /**
+         * The Width value of the iframe, if `responsive` is on the value will not be used
+         *
+         * @attribute width
+         * @type number
+         * @default 550
+         */
+        width: {
+          type: String,
+          value: ''
+        },
 
-            /**
-             * The Height value of the iframe, if `responsive` is on the value will not be used
-             *
-             * @attribute height
-             * @type number
-             * @default 300
-             */
-            height: '',
+        /**
+         * The Height value of the iframe, if `responsive` is on the value will not be used
+         *
+         * @attribute height
+         * @type number
+         * @default 300
+         */
+        height: {
+          type: String,
+          value: ''
+        },
 
-            /**
-             * Control the border width of the frame
-             *
-             * @attribute frameborder
-             * @type number
-             * @default 0
-             */
-            frameborder: 0,
+        /**
+         * Control the border width of the frame
+         *
+         * @attribute frameborder
+         * @type number
+         * @default 0
+         */
+        frameborder: {
+          type: Number,
+          value: 0
+        },
 
-            /**
-             * Toggle the responsiveness of the player
-             *
-             * @attribute responsive
-             * @type number
-             * @default 0
-             */
-            responsive: 0,
+        /**
+         * Toggle the responsiveness of the player
+         *
+         * @attribute responsive
+         * @type number
+         * @default 0
+         */
+        responsive: {
+          type: Number,
+          value: 0
+        },
 
-            /**
-             * The caption displayed below the video
-             *
-             * @attribute caption
-             * @type string
-             */
-            caption: '',
+        /**
+         * The caption displayed below the video
+         *
+         * @attribute caption
+         * @type string
+         */
+        caption: {
+          type: String,
+          value: ''
+        }
+      },
 
-            ready: function (){
+      ready: function(){
 
-                // If both height and width ares missing, be responsive
-                if(!this.height && !this.width) this.responsive = 1;
+        console.log(this.videoid)
+        console.log(this)
 
+        // If both height and width ares missing, be responsive
+        if( !this.height && !this.width ){
+          this.responsive = 1
+        }
 
-                // If the player is responsive, add the .embed-container class
-                if(this.responsive) this.$.wrapper.className = 'embed-container'
-            },
+        // If the player is responsive, add the .embed-container class
+        if( this.responsive ){
+          this.$.wrapper.className = 'embed-container'
+        }
+      },
 
-            handleResponse: function(event, data, raw){
-                data = data.response;
-                if (!data.length) return;
-                if (!data[0]) return;
-                this.fire('vimeo-player-response', {data: data[0]});
-            }
-        });
-    </script>
+      handleResponse: function(event, data, raw){
+        data = data.response
+        if( !data || (data.length < 1) || !data[0] ){
+          return
+        }
 
-</polymer-element>
+        this.fire('vimeo-player-response', {data: data[0]})
+      }
+    })
+  </script>
+</dom-module>

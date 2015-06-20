@@ -14,23 +14,23 @@ You can specify `height` or `width` or be mobile friendly and use `responsive` i
 -->
 
 <dom-module id="vimeo-player">
-  <link rel="stylesheet" href="vimeo-player.css" type="text/css">
+  <link rel="import" type="css" href="vimeo-player.css">
 
   <template>
     <div id="wrapper">
       <iframe
-        src="//player.vimeo.com/video{{videoid}}?portrait={{portrait}}&color={{color}}&title={{title}}&byline={{byline}}&autoplay={{autoplay}}&loop={{loop}}&api={{api}}&player_id={{player_id}}"
-        width="{{width}}"
-        height="{{height}}"
-        frameborder="{{frameborder}}" webkitAllowFullScreen mozallowfullscreen allowfullscreen>
+        src="[[_vimeoUrl]]"
+        width="[[width]]"
+        height="[[height]]"
+        frameborder="[[frameborder]]" webkitAllowFullScreen mozallowfullscreen allowfullscreen>
       </iframe>
-      <p>{{caption}}</p>
+      <p>[[_caption]]</p>
     </div>
 
     <iron-ajax id="vimeoAPI" auto
-      url="http://vimeo.com/api/v2/video/{{videoid}}.json"
-      handle-as="json"
-      on-response="{{handleResponse}}">
+               url="[[_vimeoAPIUrl]]"
+               handle-as="json"
+               on-response="handleResponse">
     </iron-ajax>
   </template>
 
@@ -59,7 +59,7 @@ You can specify `height` or `width` or be mobile friendly and use `responsive` i
          */
         videoid: {
           type: String,
-          value: ''
+          value: '287384'
         },
 
         /**
@@ -211,14 +211,39 @@ You can specify `height` or `width` or be mobile friendly and use `responsive` i
         caption: {
           type: String,
           value: ''
+        },
+
+        _vimeoUrl: {
+          type: String,
+          // NOTE: these arguments correlate to the _computedVimeoUrl function intake EXACTLY. do not change the order
+          computed: '_computedVimeoUrl(videoid, portrait, color, title, byline, autoplay, loop, api, player_id)'
+        },
+
+        _vimeoAPIUrl: {
+          type: String,
+          computed: '_computedVimeoAPIUrl(videoid)'
         }
       },
 
+      _computedVimeoUrl: function(){
+        var args = Array.prototype.slice.call(arguments),
+          attrs = ['portrait','color','title','byline','autoplay','loop','api','player_id']
+        url = "//player.vimeo.com/video/"
+        url += args.shift()
+        url += "?"
+
+        args.map(function(property, i){
+          url += attrs[i]+"="+property+"&"
+        })
+
+        return url
+      },
+
+      _computedVimeoAPIUrl: function( videoid ){
+        return "http://vimeo.com/api/v2/video/"+videoid+".json"
+      },
+
       ready: function(){
-
-        console.log(this.videoid)
-        console.log(this)
-
         // If both height and width ares missing, be responsive
         if( !this.height && !this.width ){
           this.responsive = 1
